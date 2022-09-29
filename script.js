@@ -3,6 +3,16 @@ const gameBoard = (function () {
 
   const renderGameBoard = function () {
     _cell = document.querySelectorAll(".cell p");
+    _btn = document.querySelectorAll(".cell");
+
+    (function () {
+      for (let i = 0; i < _btn.length; i++) {
+        _btn[i].addEventListener("click", function () {
+          Game.playerMove.call(this, i);
+        });
+      }
+    })();
+
     for (let i = 0; i < _cell.length; i++) {
       if (_gameBoard[i] !== undefined) {
         _cell[i].innerText = _gameBoard[i];
@@ -40,4 +50,23 @@ function Player(sign) {
 const Game = (function () {
   const _player1 = Player("x");
   const _player2 = Player("o");
+  let _nextPlayer = _player1;
+
+  const playerMove = function (idx) {
+    if (gameBoard.fillBoard(idx, _nextPlayer.getSign()) === true) {
+      if (_nextPlayer.getSign() === "x") {
+        _nextPlayer = _player2;
+      } else {
+        _nextPlayer = _player1;
+      }
+    } else {
+      console.log("already filled");
+    }
+    gameBoard.renderGameBoard();
+    return;
+  };
+
+  gameBoard.renderGameBoard();
+
+  return { playerMove };
 })();
