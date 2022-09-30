@@ -24,6 +24,16 @@ const gameBoard = (function () {
     }
   };
 
+  const getEmptyBoardSlots = function () {
+    let _emptySlotsArr = [];
+    for (let i = 0; i < _gameBoard.length; i++) {
+      if (_gameBoard[i] === undefined) {
+        _emptySlotsArr.push(i);
+      }
+    }
+    return _emptySlotsArr;
+  };
+
   const fillBoard = function (idx, marker) {
     if (_gameBoard[idx] === undefined) {
       _gameBoard[idx] = marker;
@@ -37,16 +47,20 @@ const gameBoard = (function () {
     return;
   };
 
-  return { renderGameBoard, fillBoard, clearBoard, board };
+  return { renderGameBoard, fillBoard, clearBoard, board, getEmptyBoardSlots };
 })();
 
 function Player(sign) {
-  const _sign = sign;
+  let _sign = sign;
   const getSign = function () {
     return _sign;
   };
 
-  return { getSign };
+  const changeSign = function (sign) {
+    _sign = sign;
+    return _sign;
+  };
+  return { getSign, changeSign };
 }
 
 const Game = (function () {
@@ -54,17 +68,39 @@ const Game = (function () {
   const _player2 = Player("o");
   let _nextPlayer = _player1;
 
+  const _x = document.querySelector(".x");
+  const _o = document.querySelector(".o");
+
+  _x.addEventListener("click", () => {
+    _x.classList.add("x-active");
+    _o.classList.remove("o-active");
+    _nextPlayer = _player1;
+    gameBoard.clearBoard();
+    gameBoard.renderGameBoard();
+  });
+
+  _o.addEventListener("click", () => {
+    _o.classList.add("o-active");
+    _x.classList.remove("x-active");
+    // _player2.changeSign("x");
+    // _player1.changeSign("o");
+
+    _nextPlayer = _player2;
+
+    gameBoard.clearBoard();
+  });
+
   const playerMove = function (idx) {
     if (gameBoard.fillBoard(idx, _nextPlayer.getSign()) === true) {
       gameBoard.renderGameBoard();
-      endGame();
-      console.log(_winner(_nextPlayer.getSign()));
-      if (_nextPlayer.getSign() === "x") {
+      if (endGame()) return;
+      if (_nextPlayer.getSign() === _player1.getSign()) {
         _nextPlayer = _player2;
       } else {
         _nextPlayer = _player1;
       }
     }
+
     return;
   };
 
@@ -155,12 +191,15 @@ const Game = (function () {
     if (_gamestatus().state === "x" || _gamestatus().state === "o") {
       winDiv.classList.add("show");
       winDisplay.innerText = ` ${_gamestatus().state} wins`;
+      return true;
     }
 
     if (_gamestatus().state === "draw") {
       winDiv.classList.add("show");
       winDisplay.innerText = `you draw`;
+      return true;
     }
+    return false;
   };
 
   return { playerMove };

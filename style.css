@@ -19,6 +19,8 @@ body {
   background: #0ea5e9;
   box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
+  display: grid;
+  grid-template-rows: 100px 1fr;
 }
 
 .board {
@@ -69,4 +71,20 @@ body {
 
 .show {
   display: flex;
+}
+
+.select-player {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.player-btn {
+  padding: 1rem 2rem;
+}
+
+.x-active,
+.o-active {
+  background: #15803d;
 }
