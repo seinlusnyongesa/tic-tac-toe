@@ -18,6 +18,8 @@ const gameBoard = (function () {
     for (let i = 0; i < _cell.length; i++) {
       if (_gameBoard[i] !== undefined) {
         _cell[i].innerText = _gameBoard[i];
+      } else {
+        _cell[i].innerText = "";
       }
     }
   };
@@ -31,9 +33,7 @@ const gameBoard = (function () {
   };
 
   const clearBoard = function () {
-    for (let i; i < gameBoard.length; i++) {
-      _gameBoard[i] = undefined;
-    }
+    _gameBoard.fill(undefined);
     return;
   };
 
@@ -57,6 +57,7 @@ const Game = (function () {
   const playerMove = function (idx) {
     if (gameBoard.fillBoard(idx, _nextPlayer.getSign()) === true) {
       gameBoard.renderGameBoard();
+      endGame();
       console.log(_winner(_nextPlayer.getSign()));
       if (_nextPlayer.getSign() === "x") {
         _nextPlayer = _player2;
@@ -135,13 +136,32 @@ const Game = (function () {
     return { state: "playing" };
   };
 
-  const _gamestatus = function () {
+  const _gamestatus = (function () {
     return _winner;
+  })();
+
+  const endGame = function () {
+    const winDiv = document.querySelector(".win");
+    const winDisplay = document.querySelector(".win>p");
+
+    const resetBtn = document.querySelector(".reset");
+
+    resetBtn.addEventListener("click", () => {
+      gameBoard.clearBoard();
+      gameBoard.renderGameBoard();
+      winDiv.classList.remove("show");
+    });
+
+    if (_gamestatus().state === "x" || _gamestatus().state === "o") {
+      winDiv.classList.add("show");
+      winDisplay.innerText = ` ${_gamestatus().state} wins`;
+    }
+
+    if (_gamestatus().state === "draw") {
+      winDiv.classList.add("show");
+      winDisplay.innerText = `you draw`;
+    }
   };
-
-  //   const endGame = function(){
-
-  //   }
 
   return { playerMove };
 })();
